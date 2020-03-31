@@ -1,0 +1,1 @@
+![alt](https://raw.githubusercontent.com/ozcanzaferayan/react-native-shimmer-placeholder-sample/master/art/screenshot.png)
