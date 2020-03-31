@@ -1,118 +1,103 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
+/* eslint-disable prettier/prettier */
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  ScrollView,
-  View,
   Text,
   StatusBar,
+  View,
+  Image,
+  FlatList,
 } from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-declare var global: {HermesInternal: null | {}};
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 const App = () => {
+  const mockData = [1,2,3,4,5,6,7,8,9,10];
+  const [data, setData] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const apiUrl = 'https://api.github.com/orgs/react-native-community/members?v=12';
+
+  useEffect(() => {
+    fetch(apiUrl)
+    .then((result) => result.json()
+      .then((json) => {setIsVisible(true); setData(json);})
+    );
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+        style={styles.list}
+          keyExtractor={(item) => data.length === 0 ? item.toString() : item.login}
+          data={data.length === 0 ? mockData : data}
+          ItemSeparatorComponent={() => <View style={styles.seperator}/>}
+          ListHeaderComponent={() => <Text style={styles.textHeader}>Kullanıcı Listesi</Text>}
+          renderItem={(item) => {
+            const user = item.item;
+            return (
+            <View style={styles.listItem}>
+              <ShimmerPlaceHolder style={styles.image} autoRun visible={isVisible}>
+                <Image
+                  source={{
+                    uri: user.avatar_url,
+                  }} style={styles.image}
+                />
+              </ShimmerPlaceHolder>
+              <View style={styles.infoContainer}>
+              <ShimmerPlaceHolder style={{...styles.shimText, width: 75}} autoRun visible={isVisible}><Text style={styles.text}>id: {user.id}</Text></ShimmerPlaceHolder>
+              <ShimmerPlaceHolder style={{...styles.shimText, width: 175}} autoRun visible={isVisible}><Text style={styles.text}>username: {user.login}</Text></ShimmerPlaceHolder>
+              <ShimmerPlaceHolder style={{...styles.shimText, width: 240}} autoRun visible={isVisible}><Text style={styles.text}>node_id: {user.node_id}</Text></ShimmerPlaceHolder>
+              <ShimmerPlaceHolder style={{...styles.shimText, width: 260}} autoRun visible={isVisible}><Text style={styles.text}>url: {user.html_url}</Text></ShimmerPlaceHolder>
+              </View>
             </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.tsx</Text> to change
-                this screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
+            );
+          }
+        }
+        />
       </SafeAreaView>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  list: {
+    paddingHorizontal: 16,
   },
-  body: {
-    backgroundColor: Colors.white,
+  listItem: {
+    flexDirection: 'row',
+    marginBottom: 10,
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  image: {
+    width: 75,
+    height: 75,
+    borderRadius: 75,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
+  text: {
+    fontSize: 15,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
+  shimText: {
+    height: 15,
+    marginTop: 3,
   },
-  highlight: {
-    fontWeight: '700',
+  infoContainer: {
+    marginStart: 20,
+    marginTop: 0,
   },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  seperator: {
+    height: 16,
   },
+  textHeader: {
+    fontSize: 36,
+    marginBottom: 16,
+    marginTop: 16,
+    fontWeight: 'bold',
+  },
+
 });
 
 export default App;
